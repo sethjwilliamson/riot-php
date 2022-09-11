@@ -30,14 +30,10 @@ final class LorDeck extends AbstractApi
      * @throws RiotException\UnsupportedMediaTypeException
      * @throws ClientExceptionInterface
      */
-    public function getByAccessToken(string $region, string $accessToken): DeckDTOCollection
+    public function getByAccessToken(GeoRegionEnum $geoRegion, string $accessToken): DeckDTOCollection
     {
-        if ($region === "unknown") {
-            $region = "americas";
-        }
-        
         $response = $this->riotConnection->getRSO(
-            $region,
+            $geoRegion->getValue(),
             sprintf('lor/deck/v1/decks/me'),
             $accessToken
         );
@@ -60,12 +56,12 @@ final class LorDeck extends AbstractApi
      * @throws RiotException\UnsupportedMediaTypeException
      * @throws ClientExceptionInterface
      */
-    public function postByAccessToken(string $accessToken, string $name, string $code)
+    public function postByAccessToken(GeoRegionEnum $geoRegion, string $accessToken, string $name, string $code)
     {
         $newDeckDto = new NewDeckDTO($name, $code);
 
         return $this->riotConnection->postRSO(
-            'americas',
+            $geoRegion->getValue(),
             sprintf('lor/deck/v1/decks/me'),
             $accessToken,
             $newDeckDto->toArray()

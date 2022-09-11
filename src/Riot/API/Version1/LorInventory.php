@@ -31,14 +31,10 @@ final class LorInventory extends AbstractApi
      * @throws RiotException\UnsupportedMediaTypeException
      * @throws ClientExceptionInterface
      */
-    public function getByAccessToken(string $region, string $accessToken): CardDTOCollection
+    public function getByAccessToken(GeoRegionEnum $geoRegion, string $accessToken): CardDTOCollection
     {
-        if ($region === "unknown") {
-            $region = "americas";
-        }
-
         $response = $this->riotConnection->getRSO(
-            $region,
+            $geoRegion->getValue(),
             sprintf('lor/inventory/v1/cards/me'),
             $accessToken
         );
