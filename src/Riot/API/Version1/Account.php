@@ -88,4 +88,30 @@ final class Account extends AbstractApi
 
         return ActiveShardDTO::createFromArray($response->getBodyContentsDecodedAsArray());
     }
+    
+    /**
+     * @throws JsonException
+     * @throws RiotException\BadGatewayException
+     * @throws RiotException\BadRequestException
+     * @throws RiotException\DataNotFoundException
+     * @throws RiotException\ForbiddenException
+     * @throws RiotException\GatewayTimeoutException
+     * @throws RiotException\InternalServerErrorException
+     * @throws RiotException\MethodNotAllowedException
+     * @throws RiotException\RateLimitExceededException
+     * @throws RiotException\ServiceUnavailableException
+     * @throws RiotException\UnauthorizedException
+     * @throws RiotException\UnsupportedMediaTypeException
+     * @throws ClientExceptionInterface
+     */
+    public function getByAccessToken(string $accessToken): AccountDTO
+    {
+        $response = $this->riotConnection->getRSO(
+            'americas',
+            sprintf('riot/account/v1/accounts/me'),
+            $accessToken
+        );
+
+        return AccountDTO::createFromArray($response->getBodyContentsDecodedAsArray());
+    }
 }
