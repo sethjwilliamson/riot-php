@@ -34,6 +34,8 @@ final class Connection implements ConnectionInterface
 
     private StreamFactoryInterface $streamFactory;
 
+    protected ResponseDecoder $responseDecoded;
+
     public function __construct(
         ClientInterface $riotClient,
         string $riotApiToken,
@@ -44,6 +46,12 @@ final class Connection implements ConnectionInterface
         $this->riotApiToken = $riotApiToken;
         $this->requestFactory = $requestFactory;
         $this->streamFactory = $streamFactory;
+    }
+
+    
+    public function getResponseDecoded()
+    {
+        return $this->responseDecoded;
     }
 
     /**
@@ -62,7 +70,56 @@ final class Connection implements ConnectionInterface
             $this->statusCodeToException($response);
         }
 
-        return new ResponseDecoder($response);
+        $this->responseDecoded = new ResponseDecoder($response);
+
+        return $this->responseDecoded;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRSO(string $region, string $path, string $accessToken): ResponseDecoderInterface
+    {
+        $request = $this->requestFactory->createRequest(
+            'GET',
+            sprintf('https://%s.%s/%s', $region, self::API_URL, $path),
+        );
+        //$request = $request->withAddedHeader('X-Riot-Token', $this->riotApiToken);
+        $request = $request->withAddedHeader('Authorization', 'Bearer ' . $accessToken);
+
+        $response = $this->client->sendRequest($request);
+
+        if (self::STATUS_CODE_OK !== $response->getStatusCode()) {
+            $this->statusCodeToException($response);
+        }
+
+        $this->responseDecoded = new ResponseDecoder($response);
+
+        return $this->responseDecoded;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postRSO(string $region, string $path, string $accessToken, array $body)
+    {
+        $request = $this->requestFactory->createRequest(
+            'POST',
+            sprintf('https://%s.%s/%s', $region, self::API_URL, $path),
+        );
+        
+        $request = $request->withAddedHeader('Authorization', 'Bearer ' . $accessToken);
+
+        $request = $request->withBody($this->streamFactory->createStream(json_encode(
+            $body,
+            JSON_THROW_ON_ERROR,
+        )));
+
+        $response = $this->client->sendRequest($request);
+
+        if (self::STATUS_CODE_OK !== $response->getStatusCode()) {
+            $this->statusCodeToException($response);
+        }
     }
 
     public function post(string $region, string $path, array $data): ResponseDecoderInterface
@@ -95,6 +152,7 @@ final class Connection implements ConnectionInterface
             sprintf('https://%s.%s/%s', $region, self::API_URL, $path),
         );
         $request = $request->withAddedHeader('X-Riot-Token', $this->riotApiToken);
+
         $request = $request->withBody($this->streamFactory->createStream(json_encode(
             $data,
             JSON_THROW_ON_ERROR,
