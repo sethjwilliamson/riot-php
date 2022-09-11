@@ -8,6 +8,8 @@ use Riot\AbstractAPIFactory;
 use Riot\API\Version1\Account;
 use Riot\API\Version1\Clash;
 use Riot\API\Version1\LorMatch;
+use Riot\API\Version1\LorDeck;
+use Riot\API\Version1\LorInventory;
 use Riot\API\Version1\LorRanked;
 use Riot\API\Version1\TftLeague;
 use Riot\API\Version1\TftMatch;
@@ -20,6 +22,8 @@ final class Version1 extends AbstractAPIFactory
     private const ACCOUNT = 'account';
     private const LOR_RANKED = 'lor_ranked';
     private const LOR_MATCH = 'lor_match';
+    private const LOR_DECK = 'lor_deck';
+    private const LOR_INVENTORY = 'lor_inventory';
     private const CLASH = 'clash';
     private const TFT_SUMMONER = 'tft_summoner';
     private const TFT_LEAGUE = 'tft_league';
@@ -46,6 +50,22 @@ final class Version1 extends AbstractAPIFactory
     {
         /** @var LorMatch $api */
         $api = $this->createApi(self::LOR_MATCH);
+
+        return $api;
+    }
+
+    public function getLorDeck(): LorDeck
+    {
+        /** @var LorDeck $api */
+        $api = $this->createApi(self::LOR_DECK);
+
+        return $api;
+    }
+
+    public function getLorInventory(): LorInventory
+    {
+        /** @var LorInventory $api */
+        $api = $this->createApi(self::LOR_INVENTORY);
 
         return $api;
     }
@@ -102,6 +122,10 @@ final class Version1 extends AbstractAPIFactory
                 return new LorRanked($this->connection);
             case self::LOR_MATCH:
                 return new LorMatch($this->connection);
+            case self::LOR_DECK:
+                return new LorDeck($this->connection);
+            case self::LOR_INVENTORY:
+                return new LorInventory($this->connection);
             case self::CLASH:
                 return new Clash($this->connection);
             case self::TFT_SUMMONER:
