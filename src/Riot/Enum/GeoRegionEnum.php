@@ -8,7 +8,7 @@ use MyCLabs\Enum\Enum;
 
 /**
  * @method static self AMERICAS()
- * @method static self ASIA()
+ * @method static self APAC()
  * @method static self EUROPE()
  * @method static self SEA()
  *
@@ -18,7 +18,7 @@ use MyCLabs\Enum\Enum;
 final class GeoRegionEnum extends Enum
 {
     private const AMERICAS = 'americas';
-    private const ASIA = 'asia';
+    private const APAC = 'sea';
     private const EUROPE = 'europe';
     private const SEA = 'sea';
 }
